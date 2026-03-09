@@ -1,0 +1,334 @@
+openapi: 3.0.3
+
+info:
+  title: HMCTS Task Manager API
+  description: |
+    REST API for the HMCTS Caseworker Task Management System.
+    
+    Caseworkers can create, retrieve, update, and delete tasks using this API.
+    All timestamps follow **ISO 8601** format (UTC). 
+  version: "1.0.0"
+  contact:
+    name: HMCTS Digital & Technology Solutions
+    email: dts@hmcts.net
+
+servers:
+  - url: http://localhost:3001/api
+    description: Local development server
+
+tags:
+  - name: Tasks
+    description: Task management operations
+
+paths:
+  /tasks:
+    post:
+      tags: [Tasks]
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+            example:
+              title: "Review case file CAS-2026-001"
+              description: "Review and summarise the evidence bundle before the hearing."
+              status: "pending"
+              due_date: "2026-06-30T17:00:00Z"
+      responses:
+        "201":
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+        "500":
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      tags: [Tasks]
+      summary: Retrieve all tasks
+      operationId: getAllTasks
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+          description: Results per page
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/TaskStatus' }
+          description: Filter tasks by status
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [due_date, created_at, title, status]
+            default: created_at
+          description: Column to sort by
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+            default: DESC
+          description: Sort direction
+      responses:
+        "200":
+          description: Paginated list of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTasksResponse'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+
+  /tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+        description: Unique task ID
+
+    get:
+      tags: [Tasks]
+      summary: Retrieve a task by ID
+      operationId: getTaskById
+      responses:
+        "200":
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+
+    put:
+      tags: [Tasks]
+      summary: Update a task
+      operationId: updateTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags: [Tasks]
+      summary: Delete a task
+      operationId: deleteTask
+      responses:
+        "200":
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+
+  /tasks/{id}/status:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+    patch:
+      tags: [Tasks]
+      summary: Update task status only
+      operationId: updateTaskStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  $ref: '#/components/schemas/TaskStatus'
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/ValidationError'
+
+components:
+  schemas:
+    TaskStatus:
+      type: string
+      enum: [pending, in-progress, completed, cancelled]
+      example: pending
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Review case file CAS-2026-001"
+        description:
+          type: string
+          nullable: true
+          example: "Review and summarise the evidence bundle."
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        due_date:
+          type: string
+          format: date-time
+          example: "2026-06-30T17:00:00Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-08T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-03-08T10:00:00Z"
+
+    CreateTaskRequest:
+      type: object
+      required: [title, due_date]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        due_date:
+          type: string
+          format: date-time
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        due_date:
+          type: string
+          format: date-time
+
+    TaskResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Task'
+        message:
+          type: string
+
+    PaginatedTasksResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+            total:
+              type: integer
+            page:
+              type: integer
+            limit:
+              type: integer
+            totalPages:
+              type: integer
+
+    SuccessMessage:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
