@@ -1,4 +1,4 @@
-# 🏛 HMCTS Task Manager
+# HMCTS Task Manager
 
 A full-stack task management system for HMCTS caseworkers, built as part of the DTS Developer Technical Test.
 
@@ -266,31 +266,31 @@ npm run build       # Creates optimised build in build/
 ## Features
 
 ### Backend
-- ✅ Full CRUD API with RESTful conventions
-- ✅ Input validation with `express-validator` (title, status enum, ISO 8601 dates)
-- ✅ Structured JSON error responses with field-level validation errors
-- ✅ Global error handler + 404 handler
-- ✅ SQLite3 with WAL mode for performance
-- ✅ DB trigger for automatic `updated_at` timestamps
-- ✅ Filtering, sorting, and pagination
-- ✅ Swagger UI / OpenAPI 3.0 documentation
-- ✅ Morgan HTTP request logging
-- ✅ CORS configured for frontend origin
+-  Full CRUD API with RESTful conventions
+-  Input validation with `express-validator` (title, status enum, ISO 8601 dates)
+-  Structured JSON error responses with field-level validation errors
+-  Global error handler + 404 handler
+-  SQLite3 with WAL mode for performance
+-  DB trigger for automatic `updated_at` timestamps
+-  Filtering, sorting, and pagination
+-  Swagger UI / OpenAPI 3.0 documentation
+-  Morgan HTTP request logging
+-  CORS configured for frontend origin
 
 ### Frontend
-- ✅ Create, read, update, delete tasks
-- ✅ Inline status change from task card (dropdown)
-- ✅ Filter by status, sort by multiple columns
-- ✅ Pagination controls
-- ✅ Overdue task detection (red date styling)
-- ✅ Loading skeleton UI
-- ✅ Empty state with call-to-action
-- ✅ Toast notifications for all operations
-- ✅ Keyboard-accessible modal with Escape key close
-- ✅ Confirm dialog for destructive actions
-- ✅ Client-side form validation with character counters
-- ✅ Responsive layout (mobile → desktop)
-- ✅ Animated transitions and hover effects
+-  Create, read, update, delete tasks
+-  Inline status change from task card (dropdown)
+-  Filter by status, sort by multiple columns
+-  Pagination controls
+-  Overdue task detection (red date styling)
+-  Loading skeleton UI
+-  Empty state with call-to-action
+-  Toast notifications for all operations
+-  Keyboard-accessible modal with Escape key close
+-  Confirm dialog for destructive actions
+-  Client-side form validation with character counters
+-  Responsive layout (mobile → desktop)
+-  Animated transitions and hover effects
 
 ---
 
@@ -306,4 +306,4 @@ npm run build       # Creates optimised build in build/
 
 ## License
 
-Built for the HMCTS DTS Developer Technical Test. Not for production use.
+Built for the HMCTS DTS . Not for production use.
