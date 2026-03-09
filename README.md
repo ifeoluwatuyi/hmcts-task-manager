@@ -296,11 +296,11 @@ npm run build       # Creates optimised build in build/
 
 ## Design Decisions
 
-1. **better-sqlite3 over `sqlite3`** — Synchronous, faster, simpler, no callback hell.
-2. **`RETURNING *` clauses** — Avoids a second SELECT after mutating operations.
-3. **Separate `PATCH /status` endpoint** — Follows REST convention for partial updates and aligns with the spec requirement.
-4. **`useTasks` custom hook** — Centralises all API state, loading, and error handling out of the component layer.
-5. **Optimistic UI for status changes** — Local state updated immediately; API called in background for snappy UX.
+1. **better-sqlite3 over `sqlite3`** - Synchronous, faster, simpler, no callback hell.
+2. **`RETURNING *` clauses** - Avoids a second SELECT after mutating operations.
+3. **Separate `PATCH /status` endpoint** - Follows REST convention for partial updates and aligns with the spec requirement.
+4. **`useTasks` custom hook** - Centralises all API state, loading, and error handling out of the component layer.
+5. **Optimistic UI for status changes** - Local state updated immediately; API called in background for snappy UX.
 
 ---
 
